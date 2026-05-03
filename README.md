@@ -1,7 +1,7 @@
 
 # Mobile and Ubiquitous Computing
 
-## MEIC/METI 2024/2025
+## MEIC/METI 2025/2026
 
 # Lab Guide 3
 
@@ -33,41 +33,44 @@ Add the following dependencies:
 
 dependencies {
 
-    // Jetpack Compose
-    implementation("androidx.compose.ui:ui:1.5.0")
-    implementation("androidx.compose.material:material-icons-core:1.7.8")
-    implementation("androidx.compose.material:material-icons-extended-android:1.7.8")
-    implementation("androidx.compose.material:material:1.5.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("androidx.compose.foundation:foundation:1.8.0")
-    implementation(libs.androidx.navigation.compose)
+    // Compose View Model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+
+    // Extended Icons
+    implementation("androidx.compose.material:material-icons-extended")
 
     // Room
-    val room_version = "2.7.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    implementation("androidx.room:room-paging:$room_version")
+    val roomVersion = "2.8.4"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation("androidx.room:room-paging:$roomVersion")
 
     //navigation
-    val nav_version = "2.8.9"
-    implementation("androidx.navigation:navigation-fragment:$nav_version")
-    implementation("androidx.navigation:navigation-ui:$nav_version")
+    val navVersion = "2.9.8"
+    implementation("androidx.navigation:navigation-fragment:$navVersion")
+    implementation("androidx.navigation:navigation-ui:$navVersion")
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
-    implementation("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.2.1")
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.2.1")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    //supabase
+    val supabaseVersion = "3.6.0"
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabaseVersion")
+    implementation("io.github.jan-tennert.supabase:storage-kt:$supabaseVersion")
+    implementation("io.github.jan-tennert.supabase:auth-kt:$supabaseVersion")
+    val ktorVersion = "3.4.3"
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-utils:$ktorVersion")
  
     ...
 }
-
 ```
 
 You'll also need to add this line to the plugins:
@@ -75,8 +78,29 @@ You'll also need to add this line to the plugins:
 ```kotlin
 plugins {
     ....
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
 }
+```
+
+Due to the most recent versions of Gradle please make sure in your `libs.versions.toml` file you have the following versions plugins:
+
+```kotlin
+[versions]
+agp = "9.2.0"
+coreKtx = "1.18.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.13.0"
+kotlin = "2.3.21"
+composeBom = "2026.04.01"
+ksp = "2.3.7"
+...
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ```
 
 ---
@@ -337,7 +361,7 @@ By the end of this lab, you will:
 * timestamp – Int8
 
 
-3 - Still under Table Editor, go to `Connect` (top left corner), select `Mobile Framework` -> `Android Kotlin` and save the sample code for **Part 2** **Step 2**
+3 - Still under Table Editor, go to `Connect` (top left corner), select `Framework` -> `Android Kotlin` and save the sample code for **Part 2** **Step 2**
 
 4 - On the table editor, click on the three dots (...) by the table Notes ->  View Policies -> Create Policy (top right corner)
  and fill with the following:
@@ -350,7 +374,7 @@ By the end of this lab, you will:
 * USE OPTIONS ABOVE TO EDIT (complete the code):
 
 ```sql
-alter policy "NotesApp"
+create policy "Insert notes"
 on "public"."notes"
 to public
 using (
@@ -372,7 +396,7 @@ Add the following plugin to your `build.gradle`(app module):
 ```kotlin
 plugins {
     ...
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
     ...
 }
 ```
@@ -384,15 +408,15 @@ Add the following to your `build.gradle` (app module):
 ```kotlin
 dependencies {
     //supabase
-    val supabase_version = "3.1.2"
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabase_version")
-    implementation("io.github.jan-tennert.supabase:storage-kt:$supabase_version")
-    implementation("io.github.jan-tennert.supabase:auth-kt:$supabase_version")
-    val ktor_version = "3.1.3"
-    implementation("io.ktor:ktor-client-android:$ktor_version")
-    implementation("io.ktor:ktor-client-core:$ktor_version")
-    implementation("io.ktor:ktor-utils:$ktor_version")
+    val supabaseVersion = "3.6.0"
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabaseVersion")
+    implementation("io.github.jan-tennert.supabase:storage-kt:$supabaseVersion")
+    implementation("io.github.jan-tennert.supabase:auth-kt:$supabaseVersion")
 
+    val ktorVersion = "3.4.3"
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-utils:$ktorVersion")
 }
 ```
 
