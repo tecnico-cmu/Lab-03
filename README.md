@@ -452,7 +452,7 @@ Create a new `SupabaseNoteRepository` with a Supabase-powered version:
 
 ```kotlin
 class SupabaseNoteRepository {
-    private val notesTable = SupabaseClient.supabase.postgrest["notes"]
+    private val notesTable = supabase.postgrest["notes"]
 
     fun getAllNotes(): Flow<List<Note>> = flow {
         val result = notesTable.select().decodeList<Note>()
