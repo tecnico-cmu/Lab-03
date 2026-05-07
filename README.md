@@ -135,7 +135,7 @@ abstract class NoteDatabase : RoomDatabase() {
 }
 ```
 
-Then, create a Note entity. It represents the Notes tabla (`Note.kt`).
+Then, create a Note entity. It represents the Notes table (`Note.kt`).
 
 ```kotlin
 
